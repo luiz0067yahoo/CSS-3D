@@ -1,0 +1,22 @@
+<div class="rodar">
+</div>
+<button onclick="rodar()">Rodar</button>
+<style>
+    .rodar {
+        height: 400px;
+        width: 400px;
+        background-color: red;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 25vh;
+        display: block;
+    }
+</style>
+<script>
+    var graus = 0;
+    function rodar() {
+        let quadrado = document.getElementsByClassName("rodar")[0];
+        graus = graus + 10;
+        quadrado.style.transform = "rotatex(" + graus + "deg) rotatey(" + graus + "deg) rotatez(" + graus + "deg)";
+    }
+</script>
