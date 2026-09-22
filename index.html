@@ -10,13 +10,15 @@
         margin-right: auto;
         margin-top: 25vh;
         display: block;
+        transform: perspective(500px)
     }
 </style>
 <script>
     var graus = 0;
+    var perspective = 1000000;
     function rodar() {
         let quadrado = document.getElementsByClassName("rodar")[0];
         graus = graus + 10;
-        quadrado.style.transform = "rotatex(" + graus + "deg) rotatey(" + graus + "deg) rotatez(" + graus + "deg)";
+        quadrado.style.transform += "perspective(" + perspective + "px) translatez(" + graus + "px) rotatez(" + graus + "deg)";
     }
 </script>
