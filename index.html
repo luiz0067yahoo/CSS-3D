@@ -1,24 +1,41 @@
-<div class="rodar">
+<div class="topo">
 </div>
 <button onclick="rodar()">Rodar</button>
 <style>
-    .rodar {
+    body {
+        background-color: #545454;
+    }
+
+    .topo {
         height: 400px;
         width: 400px;
-        background-color: red;
+        background-color: white;
         margin-left: auto;
         margin-right: auto;
         margin-top: 25vh;
         display: block;
-        transform: perspective(500px)
+        transform: perspective(10000px);
+        transform: rotatex(90deg);
+    }
+
+    .base {
+        height: 400px;
+        width: 400px;
+        background-color: white;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 25vh;
+        display: block;
+        transform: perspective(10000px);
+        transform: rotatex(85deg);
     }
 </style>
 <script>
     var graus = 0;
     var perspective = 1000000;
     function rodar() {
-        let quadrado = document.getElementsByClassName("rodar")[0];
-        graus = graus + 10;
-        quadrado.style.transform += "perspective(" + perspective + "px) translatez(" + graus + "px) rotatez(" + graus + "deg)";
+        let quadrado = document.getElementsByClassName("topo")[0];
+        graus = graus + 5;
+        quadrado.style.transform = "rotatex(" + graus + "deg)";
     }
 </script>
