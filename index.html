@@ -1,125 +1,219 @@
-<div class="cubo">
-    <div class="topo"></div>
-    <div class="frente"></div>
-    <div class="base"></div>
-    <div class="esquerda"></div>
-    <div class="atraz"></div>
-    <div class="direita"></div>
-</div>
-<button onclick="rodarxvoltar()">Rodarx--</button>
-<button onclick="rodarxavancar()">Rodarx++</button>
-<br>
-<button onclick="rodaryvoltar()">Rodary--</button>
-<button onclick="rodaryavancar()">Rodary++</button>
-<br>
-<button onclick="rodarzvoltar()">Rodarz--</button>
-<button onclick="rodarzavancar()">Rodarz++</button>
-<style>
-    body {
-        background-color: cadetblue;
-    }
+<!DOCTYPE html>
+<html lang="pt-BR">
 
-    .topo {
-        height: 400px;
-        width: 400px;
-        background-color: white;
-        margin-left: auto;
-        margin-right: auto;
-        display: block;
-        transform: perspective(500px) translateZ(-200px) translatey(200px) rotateX(90deg);
-    }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubo 3D</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    .base {
-        height: 400px;
-        width: 400px;
-        background-color: yellow;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: -400px;
-        display: block;
+        body {
+            background-color: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            user-select: none;
+        }
 
-        transform: perspective(500px) translateZ(-200px) translatey(200px) rotateX(90deg);
-    }
+        .cena {
+            width: 260px;
+            height: 260px;
+            perspective: 800px;
+            margin: 90px auto;
+            cursor: grab;
+        }
 
-    .frente {
-        height: 400px;
-        width: 400px;
-        background-color: green;
-        margin-left: auto;
-        margin-right: auto;
-        display: block;
-        transform: perspective(500px);
-        z-index: 100;
-    }
+        .cena:active {
+            cursor: grabbing;
+        }
 
+        .cubo {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(30deg);
+            transition: transform 0.15s ease-out;
+        }
 
-    .atraz {
-        height: 400px;
-        width: 400px;
-        background-color: blue;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: -400px;
-        display: block;
-        transform: perspective(500px) translateZ(-400px);
-    }
+        .cubo.no-transition {
+            transition: none;
+        }
 
-    .esquerda {
-        height: 400px;
-        width: 400px;
-        background-color: orange;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: -400px;
-        display: block;
-        transform: perspective(500px) translateZ(-200px) translatex(-200px) rotateY(90deg);
-    }
+        /* Faces do Cubo */
+        .cubo>div {
+            position: absolute;
+            width: 260px;
+            height: 260px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            backface-visibility: visible;
+        }
 
-    .direita {
-        height: 400px;
-        width: 400px;
-        background-color: red;
-        margin-left: auto;
-        margin-right: auto;
-        margin-top: -400px;
-        display: block;
-        transform: perspective(500px) translateZ(-200px) translatex(200px) rotateY(90deg);
-    }
-</style>
-<script>
-    var degx = 0;
-    var degy = 0;
-    var degz = 0;
-    function rodarxavancar() {
-        let quadrado = document.getElementsByClassName("cubo")[0];
-        degx = degx + 10;
-        quadrado.style.transform = " rotatex(" + degx + "deg) rotatey(" + degy + "deg) rotatez(" + degz + "deg)";
-    }
-    function rodarxvoltar() {
-        let quadrado = document.getElementsByClassName("cubo")[0];
-        degx = degx - 10;
-        quadrado.style.transform = " rotatex(" + degx + "deg) rotatey(" + degy + "deg) rotatez(" + degz + "deg)";
-    }
-    function rodaryavancar() {
-        let quadrado = document.getElementsByClassName("cubo")[0];
-        degy = degy + 10;
-        quadrado.style.transform = " rotatex(" + degx + "deg) rotatey(" + degy + "deg) rotatez(" + degz + "deg)";
-    }
-    function rodaryvoltar() {
-        let quadrado = document.getElementsByClassName("cubo")[0];
-        degy = degy - 10;
-        quadrado.style.transform = " rotatex(" + degx + "deg) rotatey(" + degy + "deg) rotatez(" + degz + "deg)";
-    }
+        .frente {
+            background: green;
+            transform: rotateY(0deg) translateZ(130px);
+        }
 
+        .atraz {
+            background: blue;
+            transform: rotateY(180deg) translateZ(130px);
+        }
 
-    function rodarzavancar() {
-        let quadrado = document.getElementsByClassName("cubo")[0];
-        degz = degz + 10;
-        quadrado.style.transform = " rotatex(" + degx + "deg) rotatey(" + degy + "deg) rotatez(" + degz + "deg)";
-    }
-    function rodarzvoltar() {
-        let quadrado = document.getElementsByClassName("cubo")[0];
-        degz = degz - 10;
-        quadrado.style.transform = " rotatex(" + degx + "deg) rotatey(" + degy + "deg) rotatez(" + degz + "deg)";
-    }
-</script>
+        .direita {
+            background: red;
+            transform: rotateY(90deg) translateZ(130px);
+        }
+
+        .esquerda {
+            background: orange;
+            transform: rotateY(-90deg) translateZ(130px);
+        }
+
+        .topo {
+            background: white;
+            transform: rotateX(90deg) translateZ(130px);
+        }
+
+        .base {
+            background: yellow;
+            transform: rotateX(-90deg) translateZ(130px);
+        }
+
+        /* Controles Minimalistas */
+        .controles {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .grupo-botoes {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="cena" id="cena">
+        <div class="cubo" id="cubo">
+            <div class="topo"></div>
+            <div class="frente"></div>
+            <div class="base"></div>
+            <div class="esquerda"></div>
+            <div class="atraz"></div>
+            <div class="direita"></div>
+        </div>
+    </div>
+
+    <div class="controles">
+        <div class="grupo-botoes">
+            <button onclick="rodarxvoltar()">X -</button>
+            <button onclick="rodarxavancar()">X +</button>
+            <button onclick="rodaryvoltar()">Y -</button>
+            <button onclick="rodaryavancar()">Y +</button>
+            <button onclick="rodarzvoltar()">Z -</button>
+            <button onclick="rodarzavancar()">Z +</button>
+        </div>
+        <div class="grupo-botoes">
+            <button onclick="resetarRotacao()">Reset</button>
+            <button id="btnAuto" onclick="alternarAutoRotacao()">Auto</button>
+        </div>
+    </div>
+
+    <script>
+        let degx = 0, degy = 0, degz = 0;
+        let autoInterval = null;
+        const cubo = document.getElementById("cubo");
+
+        function aplicarTransformacao() {
+            cubo.style.transform = `rotateX(${degx}deg) rotateY(${degy}deg) rotateZ(${degz}deg)`;
+        }
+
+        function rodarxavancar() { degx += 5; aplicarTransformacao(); }
+        function rodarxvoltar() { degx -= 5; aplicarTransformacao(); }
+        function rodaryavancar() { degy += 5; aplicarTransformacao(); }
+        function rodaryvoltar() { degy -= 5; aplicarTransformacao(); }
+        function rodarzavancar() { degz += 5; aplicarTransformacao(); }
+        function rodarzvoltar() { degz -= 5; aplicarTransformacao(); }
+        function resetarRotacao() { degx = 0; degy = 0; degz = 0; aplicarTransformacao(); }
+
+        function alternarAutoRotacao() {
+            const btn = document.getElementById("btnAuto");
+            if (autoInterval) {
+                clearInterval(autoInterval);
+                autoInterval = null;
+            } else {
+                autoInterval = setInterval(() => {
+                    degy = (degy + 1) % 360;
+                    degx = (degx + 1) % 360;
+                    degz = (degz + 1) % 360;
+                    aplicarTransformacao();
+                }, 20);
+            }
+        }
+
+        // Arrastar com Mouse / Touch
+        let isDragging = false, startX, startY;
+        const cena = document.getElementById("cena");
+
+        function startDrag(x, y) {
+            isDragging = true;
+            startX = x;
+            startY = y;
+            cubo.classList.add('no-transition');
+        }
+
+        function moveDrag(x, y) {
+            if (!isDragging) return;
+            degy += (x - startX) * 0.5;
+            degx -= (y - startY) * 0.5;
+            startX = x;
+            startY = y;
+            aplicarTransformacao();
+        }
+
+        function endDrag() {
+            if (isDragging) {
+                isDragging = false;
+                cubo.classList.remove('no-transition');
+            }
+        }
+
+        cena.addEventListener('mousedown', e => startDrag(e.clientX, e.clientY));
+        window.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+        window.addEventListener('mouseup', endDrag);
+
+        cena.addEventListener('touchstart', e => {
+            if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
+        window.addEventListener('touchmove', e => {
+            if (e.touches.length === 1) moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
+        window.addEventListener('touchend', endDrag);
+
+        window.addEventListener('keydown', e => {
+            if (e.key === 'ArrowUp') rodarxvoltar();
+            if (e.key === 'ArrowDown') rodarxavancar();
+            if (e.key === 'ArrowLeft') rodaryvoltar();
+            if (e.key === 'ArrowRight') rodaryavancar();
+        });
+
+        aplicarTransformacao();
+    </script>
+</body>
+
+</html>
