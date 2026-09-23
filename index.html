@@ -1,16 +1,80 @@
-<div class="rodar">
-</div>
+<div class="topo"></div>
+<div class="frente"></div>
+<div class="base"></div>
+<div class="esquerda"></div>
+<div class="atraz"></div>
+<div class="direita"></div>
 <button onclick="rodar()">Rodar</button>
 <style>
-    .rodar {
+    body {
+        background-color: cadetblue;
+    }
+
+    .topo {
+        height: 400px;
+        width: 400px;
+        background-color: white;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        transform: perspective(500px) translateZ(-200px) translatey(200px) rotateX(90deg);
+    }
+
+    .base {
+        height: 400px;
+        width: 400px;
+        background-color: yellow;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: -400px;
+        display: block;
+
+        transform: perspective(500px) translateZ(-200px) translatey(200px) rotateX(90deg);
+    }
+
+    .frente {
+        height: 400px;
+        width: 400px;
+        background-color: green;
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+        transform: perspective(500px);
+        z-index: 100;
+    }
+
+
+    .atraz {
+        height: 400px;
+        width: 400px;
+        background-color: blue;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: -400px;
+        display: block;
+        transform: perspective(500px) translateZ(-400px);
+    }
+
+    .esquerda {
+        height: 400px;
+        width: 400px;
+        background-color: orange;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: -400px;
+        display: block;
+        transform: perspective(500px) translateZ(-200px) translatex(-200px) rotateY(90deg);
+    }
+
+    .direita {
         height: 400px;
         width: 400px;
         background-color: red;
         margin-left: auto;
         margin-right: auto;
-        margin-top: 25vh;
+        margin-top: -400px;
         display: block;
-        transform: perspective(500px)
+        transform: perspective(500px) translateZ(-200px) translatex(200px) rotateY(90deg);
     }
 </style>
 <script>
