@@ -1,10 +1,19 @@
-<div class="topo"></div>
-<div class="frente"></div>
-<div class="base"></div>
-<div class="esquerda"></div>
-<div class="atraz"></div>
-<div class="direita"></div>
-<button onclick="rodar()">Rodar</button>
+<div class="cubo">
+    <div class="topo"></div>
+    <div class="frente"></div>
+    <div class="base"></div>
+    <div class="esquerda"></div>
+    <div class="atraz"></div>
+    <div class="direita"></div>
+</div>
+<button onclick="rodarxvoltar()">Rodarx--</button>
+<button onclick="rodarxavancar()">Rodarx++</button>
+<br>
+<button onclick="rodaryvoltar()">Rodary--</button>
+<button onclick="rodaryavancar()">Rodary++</button>
+<br>
+<button onclick="rodarzvoltar()">Rodarz--</button>
+<button onclick="rodarzavancar()">Rodarz++</button>
 <style>
     body {
         background-color: cadetblue;
@@ -78,11 +87,39 @@
     }
 </style>
 <script>
-    var graus = 0;
-    var perspective = 1000000;
-    function rodar() {
-        let quadrado = document.getElementsByClassName("rodar")[0];
-        graus = graus + 10;
-        quadrado.style.transform += "perspective(" + perspective + "px) translatez(" + graus + "px) rotatez(" + graus + "deg)";
+    var degx = 0;
+    var degy = 0;
+    var degz = 0;
+    function rodarxavancar() {
+        let quadrado = document.getElementsByClassName("cubo")[0];
+        degx = degx + 10;
+        quadrado.style.transform = " rotatex(" + degx + "deg) rotatey(" + degy + "deg) rotatez(" + degz + "deg)";
+    }
+    function rodarxvoltar() {
+        let quadrado = document.getElementsByClassName("cubo")[0];
+        degx = degx - 10;
+        quadrado.style.transform = " rotatex(" + degx + "deg) rotatey(" + degy + "deg) rotatez(" + degz + "deg)";
+    }
+    function rodaryavancar() {
+        let quadrado = document.getElementsByClassName("cubo")[0];
+        degy = degy + 10;
+        quadrado.style.transform = " rotatex(" + degx + "deg) rotatey(" + degy + "deg) rotatez(" + degz + "deg)";
+    }
+    function rodaryvoltar() {
+        let quadrado = document.getElementsByClassName("cubo")[0];
+        degy = degy - 10;
+        quadrado.style.transform = " rotatex(" + degx + "deg) rotatey(" + degy + "deg) rotatez(" + degz + "deg)";
+    }
+
+
+    function rodarzavancar() {
+        let quadrado = document.getElementsByClassName("cubo")[0];
+        degz = degz + 10;
+        quadrado.style.transform = " rotatex(" + degx + "deg) rotatey(" + degy + "deg) rotatez(" + degz + "deg)";
+    }
+    function rodarzvoltar() {
+        let quadrado = document.getElementsByClassName("cubo")[0];
+        degz = degz - 10;
+        quadrado.style.transform = " rotatex(" + degx + "deg) rotatey(" + degy + "deg) rotatez(" + degz + "deg)";
     }
 </script>
