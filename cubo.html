@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubo de Rubik 3D (Cubo Mágico)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --tam-peca: 64px;
+            --metade-peca: 32px;
+            --dist-peca: 68px;
+            --fator-espaco: 1;
+            --bg-color: #090d16;
+            --cor-plastico: #11141d;
+            --borda-plastico: #1c2333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 50% 30%, #172033 0%, #090d16 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            overflow-y: auto;
+            user-select: none;
+            color: #f8fafc;
+            padding: 20px 10px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            z-index: 2;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        /* Cena 3D */
+        .cena {
+            width: 280px;
+            height: 280px;
+            perspective: 1000px;
+            margin: 20px auto 30px auto;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+        }
+
+        .cena:active {
+            cursor: grabbing;
+        }
+
+        /* Container do Cubo de Rubik Completo */
+        .cubo {
+            width: var(--tam-peca);
+            height: var(--tam-peca);
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-24deg) rotateY(32deg);
+            transition: transform 0.15s ease-out;
+        }
+
+        .cubo.no-transition {
+            transition: none;
+        }
+
+        /* Cada Peça Individual (Cubinho / Cubelet) */
+        .peca {
+            width: var(--tam-peca);
+            height: var(--tam-peca);
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-style: preserve-3d;
+            transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform: translate3d(
+                calc(var(--px, 0) * var(--dist-peca) * var(--fator-espaco)),
+                calc(var(--py, 0) * var(--dist-peca) * var(--fator-espaco)),
+                calc(var(--pz, 0) * var(--dist-peca) * var(--fator-espaco))
+            );
+        }
+
+        /* Faces do Cubo */
+        .peca > div {
+            position: absolute;
+            width: var(--tam-peca);
+            height: var(--tam-peca);
+            background: var(--cor-plastico);
+            border: 2.5px solid var(--borda-plastico);
+            border-radius: 7px;
+            backface-visibility: visible;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Adesivos / Stickers Coloridos */
+        .peca > div::after {
+            content: '';
+            position: absolute;
+            width: calc(100% - 8px);
+            height: calc(100% - 8px);
+            border-radius: 4px;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4), inset 0 -1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Faces internas sem cor brilhante */
+        .cor-interno::after {
+            display: none;
+        }
+
+        /* Posições das Faces em 3D */
+        .frente {
+            transform: rotateY(0deg) translateZ(var(--metade-peca));
+        }
+
+        .atraz {
+            transform: rotateY(180deg) translateZ(var(--metade-peca));
+        }
+
+        .direita {
+            transform: rotateY(90deg) translateZ(var(--metade-peca));
+        }
+
+        .esquerda {
+            transform: rotateY(-90deg) translateZ(var(--metade-peca));
+        }
+
+        .topo {
+            transform: rotateX(90deg) translateZ(var(--metade-peca));
+        }
+
+        .base {
+            transform: rotateX(-90deg) translateZ(var(--metade-peca));
+        }
+
+        /* Paleta Oficial do Cubo de Rubik */
+        .cor-verde::after {
+            background: linear-gradient(135deg, #009b48 0%, #007a38 100%);
+        }
+
+        .cor-azul::after {
+            background: linear-gradient(135deg, #0046ad 0%, #003282 100%);
+        }
+
+        .cor-vermelho::after {
+            background: linear-gradient(135deg, #b71234 0%, #8f0d28 100%);
+        }
+
+        .cor-laranja::after {
+            background: linear-gradient(135deg, #ff5800 0%, #d94800 100%);
+        }
+
+        .cor-branco::after {
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+        }
+
+        .cor-amarelo::after {
+            background: linear-gradient(135deg, #ffd500 0%, #d4b000 100%);
+        }
+
+        /* Painel de Controles */
+        .controles {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 18px 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            z-index: 2;
+            max-width: 480px;
+            width: 100%;
+        }
+
+        .secao-rotulo {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #64748b;
+            margin-bottom: -4px;
+            text-align: center;
+        }
+
+        .grupo-botoes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.07);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.825rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(1px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        button.ativo {
+            background: #3b82f6;
+            border-color: #60a5fa;
+            color: #ffffff;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-destaque {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.35));
+            border-color: rgba(96, 165, 250, 0.4);
+        }
+
+        .btn-destaque:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(37, 99, 235, 0.55));
+            border-color: rgba(96, 165, 250, 0.7);
+        }
+
+        /* Controle de Espaçamento / Explosão */
+        .controle-slider {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .controle-slider label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #94a3b8;
+            white-space: nowrap;
+        }
+
+        .controle-slider input[type="range"] {
+            flex: 1;
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+
+        .atalhos-info {
+            font-size: 0.72rem;
+            color: #64748b;
+            text-align: center;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Cubo de Rubik 3D</h1>
+        <p>Arraste para girar em 3D livremente ou use os botões</p>
+    </div>
+
+    <div class="cena" id="cena">
+        <div class="cubo" id="cubo">
+            <!-- As 27 peças (3x3x3) do Cubo de Rubik -->
+        </div>
+    </div>
+
+    <div class="controles">
+        <div class="secao-rotulo">Rotação nos Eixos</div>
+        <div class="grupo-botoes">
+            <button onclick="rodarxvoltar()">X -</button>
+            <button onclick="rodarxavancar()">X +</button>
+            <button onclick="rodaryvoltar()">Y -</button>
+            <button onclick="rodaryavancar()">Y +</button>
+            <button onclick="rodarzvoltar()">Z -</button>
+            <button onclick="rodarzavancar()">Z +</button>
+        </div>
+
+        <div class="secao-rotulo">Ações e Animações</div>
+        <div class="grupo-botoes">
+            <button onclick="resetarRotacao()">Reset</button>
+            <button id="btnAuto" onclick="alternarAutoRotacao()">Auto Rotação</button>
+            <button class="btn-destaque" onclick="embaralharCubo()">Embaralhar</button>
+        </div>
+
+        <div class="controle-slider">
+            <label for="sliderEspaco">Espaçar Peças:</label>
+            <input type="range" id="sliderEspaco" min="1" max="2.2" step="0.05" value="1" oninput="atualizarEspaco(this.value)">
+            <span id="valorEspaco" style="font-size: 0.78rem; font-weight: 700; min-width: 32px; text-align: right; color: #38bdf8;">1.0x</span>
+        </div>
+
+        <div class="atalhos-info">
+            Use as setas do teclado para girar | Barra de espaço: Auto rotação
+        </div>
+    </div>
+
+    <script>
+        // Inicialização das 27 peças (3x3x3) do Cubo de Rubik
+        const containerCubo = document.getElementById("cubo");
+
+        function criarCuboRubik() {
+            containerCubo.innerHTML = '';
+
+            // Coordenadas dos eixos de -1 a 1 para formar os 27 cubos
+            for (let y = -1; y <= 1; y++) {
+                for (let z = -1; z <= 1; z++) {
+                    for (let x = -1; x <= 1; x++) {
+                        const peca = document.createElement("div");
+                        peca.className = "peca";
+                        peca.setAttribute("data-x", x);
+                        peca.setAttribute("data-y", y);
+                        peca.setAttribute("data-z", z);
+                        peca.style.setProperty("--px", x);
+                        peca.style.setProperty("--py", y);
+                        peca.style.setProperty("--pz", z);
+
+                        // Define as 6 faces do cubinho
+                        // Apenas as faces externas recebem as cores do cubo de Rubik
+                        const topoCor = (y === -1) ? "cor-branco" : "cor-interno";
+                        const baseCor = (y === 1) ? "cor-amarelo" : "cor-interno";
+                        const frenteCor = (z === 1) ? "cor-verde" : "cor-interno";
+                        const atrazCor = (z === -1) ? "cor-azul" : "cor-interno";
+                        const direitaCor = (x === 1) ? "cor-vermelho" : "cor-interno";
+                        const esquerdaCor = (x === -1) ? "cor-laranja" : "cor-interno";
+
+                        peca.innerHTML = `
+                            <div class="topo ${topoCor}"></div>
+                            <div class="frente ${frenteCor}"></div>
+                            <div class="base ${baseCor}"></div>
+                            <div class="esquerda ${esquerdaCor}"></div>
+                            <div class="atraz ${atrazCor}"></div>
+                            <div class="direita ${direitaCor}"></div>
+                        `;
+
+                        containerCubo.appendChild(peca);
+                    }
+                }
+            }
+        }
+
+        criarCuboRubik();
+
+        // Variáveis de Controle e Ângulos de Rotação
+        let degx = -24, degy = 32, degz = 0;
+        let autoInterval = null;
+        const cubo = document.getElementById("cubo");
+
+        function aplicarTransformacao() {
+            cubo.style.transform = `rotateX(${degx}deg) rotateY(${degy}deg) rotateZ(${degz}deg)`;
+        }
+
+        // Funções de Rotação Manual
+        function rodarxavancar() { degx += 15; aplicarTransformacao(); }
+        function rodarxvoltar() { degx -= 15; aplicarTransformacao(); }
+        function rodaryavancar() { degy += 15; aplicarTransformacao(); }
+        function rodaryvoltar() { degy -= 15; aplicarTransformacao(); }
+        function rodarzavancar() { degz += 15; aplicarTransformacao(); }
+        function rodarzvoltar() { degz -= 15; aplicarTransformacao(); }
+
+        function resetarRotacao() {
+            degx = -24;
+            degy = 32;
+            degz = 0;
+            if (autoInterval) alternarAutoRotacao();
+            atualizarEspaco(1);
+            document.getElementById("sliderEspaco").value = 1;
+            aplicarTransformacao();
+        }
+
+        // Auto Rotação Suave
+        function alternarAutoRotacao() {
+            const btn = document.getElementById("btnAuto");
+            if (autoInterval) {
+                clearInterval(autoInterval);
+                autoInterval = null;
+                btn.classList.remove("ativo");
+            } else {
+                btn.classList.add("ativo");
+                autoInterval = setInterval(() => {
+                    degy = (degy + 0.8) % 360;
+                    degx = (degx + 0.4) % 360;
+                    aplicarTransformacao();
+                }, 20);
+            }
+        }
+
+        // Espaçamento 3D / Explosão dos 27 cubos
+        function atualizarEspaco(fator) {
+            document.documentElement.style.setProperty("--fator-espaco", fator);
+            document.getElementById("valorEspaco").textContent = Number(fator).toFixed(1) + "x";
+        }
+
+        // Animação de Embaralhar
+        let embaralhando = false;
+        function embaralharCubo() {
+            if (embaralhando) return;
+            embaralhando = true;
+            let passos = 0;
+            const maxPassos = 18;
+
+            const intervalo = setInterval(() => {
+                const eixos = ['x', 'y', 'z'];
+                const eixo = eixos[Math.floor(Math.random() * eixos.length)];
+                const dir = Math.random() > 0.5 ? 25 : -25;
+
+                if (eixo === 'x') degx += dir;
+                if (eixo === 'y') degy += dir;
+                if (eixo === 'z') degz += dir;
+
+                aplicarTransformacao();
+                passos++;
+
+                if (passos >= maxPassos) {
+                    clearInterval(intervalo);
+                    embaralhando = false;
+                }
+            }, 60);
+        }
+
+        // Arrastar com Mouse / Touch
+        let isDragging = false, startX, startY;
+        const cena = document.getElementById("cena");
+
+        function startDrag(x, y) {
+            isDragging = true;
+            startX = x;
+            startY = y;
+            cubo.classList.add('no-transition');
+        }
+
+        function moveDrag(x, y) {
+            if (!isDragging) return;
+            degy += (x - startX) * 0.6;
+            degx -= (y - startY) * 0.6;
+            startX = x;
+            startY = y;
+            aplicarTransformacao();
+        }
+
+        function endDrag() {
+            if (isDragging) {
+                isDragging = false;
+                cubo.classList.remove('no-transition');
+            }
+        }
+
+        cena.addEventListener('mousedown', e => startDrag(e.clientX, e.clientY));
+        window.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+        window.addEventListener('mouseup', endDrag);
+
+        cena.addEventListener('touchstart', e => {
+            if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
+        window.addEventListener('touchmove', e => {
+            if (e.touches.length === 1) moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: true });
+        window.addEventListener('touchend', endDrag);
+
+        // Controles pelo Teclado
+        window.addEventListener('keydown', e => {
+            if (e.key === 'ArrowUp') rodarxvoltar();
+            if (e.key === 'ArrowDown') rodarxavancar();
+            if (e.key === 'ArrowLeft') rodaryvoltar();
+            if (e.key === 'ArrowRight') rodaryavancar();
+            if (e.code === 'Space') {
+                e.preventDefault();
+                alternarAutoRotacao();
+            }
+        });
+
+        aplicarTransformacao();
+    </script>
+</body>
+
+</html>
