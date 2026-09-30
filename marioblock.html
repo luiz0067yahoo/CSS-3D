@@ -24,6 +24,60 @@
             left: 0px;
         }
     </style>
+    <script>
+        var velocidade = 0;
+        var travaVertical = false;
+        var travaHorizontal = false;
+        const gravidade = 10;
+
+        const step = 10;
+
+        function pulo(velocidadePulo, sentido) {
+            travaVertical = true
+            const block = document.querySelector(".block");
+            const rect = block.getBoundingClientRect();
+            const bottom = window.innerHeight - rect.bottom;
+            if (sentido == "UP") {
+                block.style.bottom = Math.max((bottom + velocidadePulo), 0) + "px";
+                velocidadePulo = velocidadePulo - gravidade;
+                if (velocidadePulo <= 0)
+                    sentido = "DOWN";
+            } else {
+                block.style.bottom = Math.max((bottom - velocidadePulo), 0) + "px";
+                velocidadePulo = velocidadePulo + gravidade;
+            }
+            console.log(bottom)
+            if ((bottom > 10 && sentido == "DOWN") || (sentido == "UP")) {
+                setTimeout(() => {
+                    pulo(velocidadePulo, sentido);
+                }, 1000);
+            } else {
+                travaVertical = false;
+            }
+        }
+
+        document.addEventListener("keydown", function (e) {
+            const block = document.querySelector(".block");
+            if (!travaHorizontal) {
+                if (e.key === "ArrowRight") {
+                    block.style.left = (block.offsetLeft + step) + "px";
+                }
+                if (e.key === "ArrowLeft") {
+                    block.style.left = (block.offsetLeft - step) + "px";
+                }
+            }
+            if (!travaVertical) {
+                if (e.key === "ArrowUp") {
+                    pulo(50, "UP");
+                }
+                if (e.key === "ArrowDown") {
+                    pulo(50, "UP");
+                }
+            }
+        });
+
+
+    </script>
 </head>
 
 <body>
